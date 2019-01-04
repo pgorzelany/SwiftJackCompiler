@@ -1,4 +1,5 @@
 import Common
+import Foundation
 
 /// Generates Jack tokens from raw source code
 public class Lexer {
@@ -24,4 +25,13 @@ public class Lexer {
     }
 
     // MARK: Private methods
+
+    private func matchWhitespace(in source: String) -> Token? {
+        var source = source
+        guard !source.isEmpty else {
+            return nil
+        }
+        let whitespaceCharacterSet = NSCharacterSet.whitespacesAndNewlines
+        return nil
+    }
 }
