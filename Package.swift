@@ -13,9 +13,10 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(name: "SwiftJackCompiler", dependencies: ["Lexer", "Parser", "CodeGenerator"]),
-        .target(name: "Lexer", dependencies: []),
-        .target(name: "Parser", dependencies: []),
-        .target(name: "CodeGenerator", dependencies: []),
+        .target(name: "Lexer", dependencies: ["Common"]),
+        .target(name: "Parser", dependencies: ["Common"]),
+        .target(name: "CodeGenerator", dependencies: ["Common"]),
+        .target(name: "Common", dependencies: []),
         .testTarget(name: "SwiftJackCompilerTests", dependencies: ["Lexer", "Parser", "CodeGenerator"]),
     ]
 )
