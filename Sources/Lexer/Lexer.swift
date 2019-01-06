@@ -9,7 +9,8 @@ public class Lexer {
     let source: String
     var remainingSource: String
     let matchers: [Matcher] = [
-        WhitespaceMatcher()
+        WhitespaceMatcher(),
+        StringLiteralMatcher()
     ]
 
     // MARK: Lifecycle
