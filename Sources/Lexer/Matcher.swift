@@ -15,9 +15,10 @@ protocol Matcher {
 class WhitespaceMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
         let regex = "\\s*"
-        guard let matchRange = input.range(of: regex, options: .regularExpression), matchRange.lowerBound == input.startIndex else {
+        guard let matchRange = input.range(of: regex, options: .regularExpression), matchRange.lowerBound != matchRange.upperBound, input.starts(with: input[matchRange]) else {
             return nil
         }
+
         return (Token.whitespace, String(input[matchRange.upperBound...]))
     }
 }
