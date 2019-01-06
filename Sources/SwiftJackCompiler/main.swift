@@ -1,3 +1,5 @@
 import Lexer
 
-print("Hello, world!")
+let lexer = Lexer(source: "     ")
+let results = try? lexer.getAllTokens()
+print(results)

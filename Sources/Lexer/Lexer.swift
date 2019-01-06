@@ -7,31 +7,39 @@ public class Lexer {
     // MARK: Properties
 
     let source: String
+    var remainingSource: String
+    let matchers: [Matcher] = [
+        WhitespaceMatcher()
+    ]
 
     // MARK: Lifecycle
 
     public init(source: String) {
         self.source = source
+        self.remainingSource = source
     }
 
     // MARK: Methods
 
     public func getNextToken() throws -> Token? {
+        guard !remainingSource.isEmpty else {
+            return nil
+        }
+        
+        for matcher in matchers {
+            if let (token, remaining) = matcher.match(input: remainingSource) {
+                self.remainingSource = remaining
+                return token
+            }
+        }
         return nil
     }
 
     public func getAllTokens() throws -> [Token] {
-        return []
-    }
-
-    // MARK: Private methods
-
-    private func matchWhitespace(in source: String) -> Token? {
-        var source = source
-        guard !source.isEmpty else {
-            return nil
+        var results: [Token] = []
+        while let nextToken = try getNextToken() {
+            results.append(nextToken)
         }
-        let whitespaceCharacterSet = NSCharacterSet.whitespacesAndNewlines
-        return nil
+        return results
     }
 }
