@@ -11,6 +11,9 @@ public class Lexer {
     let matchers: [Matcher] = [
         WhitespaceMatcher(),
         KeywordMatcher(),
+        SymbolMatcher(),
+        StringConstantMatcher(),
+        IntegerConstantMatcher(),
         IdentifierMatcher()
     ]
 
