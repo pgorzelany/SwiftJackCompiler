@@ -35,7 +35,7 @@ class WhitespaceMatcher: Matcher {
 
 class IdentifierMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
-        let regex = "^([a-z])[a-z0-9]*"
+        let regex = "^([a-zA-Z])[a-zA-Z0-9]*"
         guard let matchRange = input.tokenMatchRange(regex: regex) else {
             return nil
         }

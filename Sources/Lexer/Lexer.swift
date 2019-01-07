@@ -45,6 +45,6 @@ public class Lexer {
         while let nextToken = try getNextToken() {
             results.append(nextToken)
         }
-        return results
+        return results.filter({ $0 != Token.whitespace })
     }
 }

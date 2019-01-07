@@ -33,6 +33,10 @@ class IdentifierMatcherTests: XCTestCase {
         input = "test12 = wow"
         match = matcher.match(input: input)!
         XCTAssert(match.token == .identifier("test12"))
+
+        input = "Main = wow"
+        match = matcher.match(input: input)!
+        XCTAssert(match.token == .identifier("Main"))
     }
 
     func testNotMatchingInvalidInput() {

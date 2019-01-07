@@ -10,15 +10,39 @@ import XCTest
 
 class LexerTests: XCTestCase {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+    var lexer: Lexer!
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    func testTokenizingValidProgram() {
+        let source = """
+                    class Main {
+                       function void main() {
+                          var Array a;
+                          var int length;
+                          var int i, sum;
 
-    func testExample() {
-        let lexer = Lexer(source: "hello")
+                          let length = Keyboard.readInt("How many numbers? ");
+                          let a = Array.new(length);
+
+                          let i = 0;
+                          while (i < length) {
+                             let a[i] = Keyboard.readInt("Enter a number: ");
+                             let sum = sum + a[i];
+                             let i = i + 1;
+                          }
+
+                          do Output.printString("The average is ");
+                          do Output.printInt(sum / length);
+                          return;
+                       }
+                    }
+                    """
+        lexer = Lexer(source: source)
+        do {
+            let tokens = try lexer.getAllTokens()
+            XCTAssert(tokens.count > 0)
+            print(tokens)
+        } catch {
+            XCTAssert(false)
+        }
     }
 }
