@@ -89,10 +89,7 @@ class IntegerConstantMatcher: Matcher {
 
 class StringConstantMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
-        // Mozna przerobic z regexa na zwykla petle
-        let regex = """
-                    ^".*"
-                    """
+        let regex = "\"(.*)\""
         guard let matchRange = input.tokenMatchRange(regex: regex) else {
             return nil
         }

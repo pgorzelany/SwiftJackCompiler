@@ -5,6 +5,7 @@
 //  Created by pgorzelany on 07/01/2019.
 //
 
+@testable import Common
 @testable import Lexer
 import XCTest
 
@@ -17,14 +18,17 @@ class StringConstantMatcherTests: XCTestCase {
     }
 
     func testMatchingValidInput() {
-        let validInputs = [
-            "sdfsd \"fasfdasfsaf\" sfsdf"
-        ]
+        var input = "\"fasfdasfsaf\" sfsdf"
+        var match = matcher.match(input: input)
+        XCTAssert(match != nil)
+        XCTAssert(match!.token == Token.stringConstant("\"fasfdasfsaf\""))
+        XCTAssert(match!.remaining == " sfsdf")
 
-        for input in validInputs {
-            let match = matcher.match(input: input)
-            XCTAssert(match != nil)
-        }
+        input = "\" hello world 1234 sfds \" akuku func x = 0"
+        match = matcher.match(input: input)
+        XCTAssert(match != nil)
+        XCTAssert(match!.token == Token.stringConstant("\" hello world 1234 sfds \""))
+        XCTAssert(match!.remaining == " akuku func x = 0")
     }
 
     func testNotMatchingInvalidInput() {

@@ -20,6 +20,7 @@ class IdentifierMatcherTests: XCTestCase {
         var input = "func what"
         var match = matcher.match(input: input)!
         XCTAssert(match.token == .identifier("func"))
+        XCTAssert(match.remaining == " what")
 
         input = "literal x = asdasd"
         match = matcher.match(input: input)!
