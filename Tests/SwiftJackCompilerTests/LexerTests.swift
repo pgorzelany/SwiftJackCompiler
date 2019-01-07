@@ -39,7 +39,7 @@ class LexerTests: XCTestCase {
         lexer = Lexer(source: source)
         do {
             let tokens = try lexer.getAllTokens()
-            XCTAssert(tokens.count > 0)
+            XCTAssert(tokens.count == 108)
             print(tokens)
         } catch {
             XCTAssert(false)
