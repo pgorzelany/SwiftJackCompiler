@@ -33,13 +33,70 @@ class WhitespaceMatcher: Matcher {
     }
 }
 
-class StringLiteralMatcher: Matcher {
+class IdentifierMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
-        let regex = "[a-z]+"
+        let regex = "^([a-z])[a-z0-9]*"
         guard let matchRange = input.tokenMatchRange(regex: regex) else {
             return nil
         }
 
-        return (Token.stringLiteral(String(input[matchRange])), String(input[matchRange.upperBound...]))
+        return (Token.identifier(String(input[matchRange])), String(input[matchRange.upperBound...]))
+    }
+}
+
+class KeywordMatcher: Matcher {
+    func match(input: String) -> (token: Token, remaining: String)? {
+        var regex = "^(\(Keyword.allCases[0])"
+        for keyword in Keyword.allCases[1...] {
+            regex += "|\(keyword.rawValue)"
+        }
+        regex += ")"
+        guard let matchRange = input.tokenMatchRange(regex: regex), let keyword = Keyword(rawValue: String(input[matchRange])) else {
+            return nil
+        }
+
+        return (Token.keyword(keyword), String(input[matchRange.upperBound...]))
+    }
+}
+
+class SymbolMatcher: Matcher {
+    func match(input: String) -> (token: Token, remaining: String)? {
+        let symbols = ["{", "}" , "(", ")" , "[", "]" , ".", "," , ";", "+" , "-", "*" , "/", "&" , "|", "<" , ">", "=" , "~",]
+            .map({NSRegularExpression.escapedPattern(for: $0)})
+        var regex = "^(\(symbols[0])"
+        for symbol in symbols[1...] {
+            regex += "|\(symbol)"
+        }
+        regex += ")"
+        guard let matchRange = input.tokenMatchRange(regex: regex) else {
+            return nil
+        }
+
+        return (Token.symbol(String(input[matchRange])), String(input[matchRange.upperBound...]))
+    }
+}
+
+class IntegerConstantMatcher: Matcher {
+    func match(input: String) -> (token: Token, remaining: String)? {
+        let regex = "^[0-9]"
+        guard let matchRange = input.tokenMatchRange(regex: regex), let int = Int16(input[matchRange]), int <= 32767 else {
+            return nil
+        }
+
+        return (Token.integerConstant(int), String(input[matchRange.upperBound...]))
+    }
+}
+
+class StringConstantMatcher: Matcher {
+    func match(input: String) -> (token: Token, remaining: String)? {
+        // Mozna przerobic z regexa na zwykla petle
+        let regex = """
+                    ^".*"
+                    """
+        guard let matchRange = input.tokenMatchRange(regex: regex) else {
+            return nil
+        }
+
+        return (Token.stringConstant(String(input[matchRange])), String(input[matchRange.upperBound...]))
     }
 }
