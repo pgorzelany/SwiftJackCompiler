@@ -10,11 +10,16 @@ import Foundation
 // MARK:  Program structure
 
 public struct ClassDeclaration {
-
+    let className: ClassName
+    let classVarDeclaration: [ClassVarDeclaration]
+    let subroutineDeclarations: [SubroutineDeclaration]
 }
 
 public struct ClassVarDeclaration {
-
+    let classVarType: ClassVarType
+    let type: Type
+    let varName: VarName
+    let additionalVarNames: [VarName]
 }
 
 public enum ClassVarType: String {
@@ -27,7 +32,11 @@ public enum Type {
 }
 
 public struct SubroutineDeclaration {
-
+    let declarationType: SubroutineDeclarationType
+    let returnType: SubroutineReturnType
+    let name: SubroutineName
+    let parameterList: ParameterList
+    let body: SubroutineBody
 }
 
 public enum SubroutineDeclarationType: String {
