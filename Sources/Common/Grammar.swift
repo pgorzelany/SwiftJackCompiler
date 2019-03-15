@@ -58,7 +58,9 @@ public struct SubroutineBody {
 }
 
 public struct VarDeclaration {
-
+    let type: Type
+    let requiredVarName: VarName
+    let additionalVarNames: [VarName]
 }
 
 public struct Identifier {
@@ -79,18 +81,28 @@ public enum Statement {
 }
 
 public struct LetStatement {
+    let varName: VarName
+    let `subscript`: Expression?
+    let expression: Expression
 }
 
 public struct IfStatement {
+    let condition: Expression
+    let then: [Statement]
+    let `else`: [Statement]?
 }
 
 public struct WhileStatement {
+    let condition: Expression
+    let body: [Statement]
 }
 
 public struct DoStatement {
+    let subroutineCall: SubroutineCall
 }
 
 public struct ReturnStatement {
+    let returnExpression: Expression?
 }
 
 // MARK: Expressions
@@ -111,8 +123,13 @@ public indirect enum Term {
 }
 
 public enum SubroutineCall {
-    case function
-    case method
+    case function(SubroutineName, ExpressionList)
+    case method(MethodContext, SubroutineName, ExpressionList)
+}
+
+public enum MethodContext {
+    case `class`(ClassName)
+    case instance(VarName)
 }
 
 public typealias ExpressionList = [Expression]
