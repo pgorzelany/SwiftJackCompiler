@@ -91,6 +91,12 @@ public struct VarDeclaration {
     let type: Type
     let requiredVarName: VarName
     let additionalVarNames: [VarName]
+
+    public init(type: Type, requiredVarName: VarName, additionalVarNames: [VarName]) {
+        self.type = type
+        self.requiredVarName = requiredVarName
+        self.additionalVarNames = additionalVarNames
+    }
 }
 
 public typealias Identifier = String
@@ -113,25 +119,50 @@ public struct LetStatement {
     let varName: VarName
     let `subscript`: Expression?
     let expression: Expression
+
+    public init(varName: VarName, `subscript`: Expression?, expression: Expression) {
+        self.varName = varName
+        self.subscript = `subscript`
+        self.expression = expression
+    }
 }
 
 public struct IfStatement {
     let condition: Expression
     let then: [Statement]
     let `else`: [Statement]?
+
+    public init(condition: Expression, then: [Statement], `else`: [Statement]?) {
+        self.condition = condition
+        self.then = then
+        self.else = `else`
+    }
 }
 
 public struct WhileStatement {
     let condition: Expression
     let body: [Statement]
+
+    public init(condition: Expression, body: [Statement]) {
+        self.condition = condition
+        self.body = body
+    }
 }
 
 public struct DoStatement {
     let subroutineCall: SubroutineCall
+
+    public init(subroutineCall: SubroutineCall) {
+        self.subroutineCall = subroutineCall
+    }
 }
 
 public struct ReturnStatement {
     let returnExpression: Expression?
+
+    public init(returnExpression: Expression?) {
+        self.returnExpression = returnExpression
+    }
 }
 
 // MARK: - Expressions

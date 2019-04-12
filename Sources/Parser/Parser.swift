@@ -7,7 +7,7 @@ extension ArraySlice where Element == Token {
     }
 }
 
-/// Generates AST from a list of token. Evaluates the gramatical correctness of the code.
+/// Generates AST from a list of tokens. Evaluates the gramatical correctness of the code.
 public class Parser {
 
     typealias Input = ArraySlice<Token>
@@ -37,7 +37,6 @@ public class Parser {
         }
 
         let syntax = ClassDeclaration(className: results.1, classVarDeclarations: results.3, subroutineDeclarations: results.4)
-
         return Match(syntax: syntax, reminder: reminder)
     }
 
@@ -141,7 +140,19 @@ public class Parser {
     }
 
     func parseVarDeclaration(input: Input) -> Match<VarDeclaration>? {
-        fatalError()
+        let additionalVarNamesParser = createZeroOrMoreParser(parser: composeParsers(createSymbolParser(","), parseVarName))
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.var),
+                                                     parseType,
+                                                     parseVarName,
+                                                     additionalVarNamesParser,
+                                                     createSymbolParser(";"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = VarDeclaration(type: results.1, requiredVarName: results.2, additionalVarNames: results.3.map({ $0.1 }))
+
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseIdentifier(input: Input) -> Match<Identifier>? {
@@ -166,28 +177,103 @@ public class Parser {
 
     // MARK: - Statements
 
+    func parseStatements(input: Input) -> Match<[Statement]>? {
+        return parseZeroOrMore(input: input, parser: parseStatement)
+    }
+
     func parseStatement(input: Input) -> Match<Statement>? {
-        fatalError()
+        if let letStatementMatch = parseLetStatement(input: input) {
+            return Match(syntax: Statement.letStatement(letStatementMatch.syntax), reminder: letStatementMatch.reminder)
+        } else if let ifStatementMatch = parseIfStatement(input: input) {
+            return Match(syntax: Statement.ifStatement(ifStatementMatch.syntax), reminder: ifStatementMatch.reminder)
+        } else if let whileStatementMatch = parseWhileStatement(input: input) {
+            return Match(syntax: Statement.whileStatement(whileStatementMatch.syntax), reminder: whileStatementMatch.reminder)
+        } else if let doStatementMatch = parseDoStatement(input: input) {
+            return Match(syntax: Statement.doStatement(doStatementMatch.syntax), reminder: doStatementMatch.reminder)
+        } else if let returnStatementMatch = parseReturnStatement(input: input) {
+            return Match(syntax: Statement.returnStatement(returnStatementMatch.syntax), reminder: returnStatementMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseLetStatement(input: Input) -> Match<LetStatement>? {
-        fatalError()
+        let subscriptExpressionParser = createZeroOrOneParser(parser: composeParsers(createSymbolParser("["), parseExpression, createSymbolParser("]")))
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.let),
+                                                     parseVarName,
+                                                     subscriptExpressionParser,
+                                                     createSymbolParser("="),
+                                                     parseExpression,
+                                                     createSymbolParser(";"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = LetStatement(varName: results.1, subscript: results.2?.1, expression: results.4)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseIfStatement(input: Input) -> Match<IfStatement>? {
-        fatalError()
+        let conditionParser = composeParsers(createSymbolParser("("), parseExpression, createSymbolParser(")"))
+        let thenParser = composeParsers(createSymbolParser("{"), parseStatements, createSymbolParser("}"))
+        let elseParser = createZeroOrOneParser(parser: parseElseStatement)
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     conditionParser,
+                                                     thenParser,
+                                                     elseParser)?.toTuple() else {
+            return nil
+        }
+
+        let syntax = IfStatement(condition: results.0.1, then: results.1.1, else: results.2)
+        return Match(syntax: syntax, reminder: reminder)
+    }
+
+    func parseElseStatement(input: Input) -> Match<[Statement]>? {
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.else),
+                                                     createSymbolParser("{"),
+                                                     parseStatements,
+                                                     createSymbolParser("}"))?.toTuple() else {
+            return nil
+        }
+
+        return Match(syntax: results.2, reminder: reminder)
     }
 
     func parseWhileStatement(input: Input) -> Match<WhileStatement>? {
-        fatalError()
+        let conditionParser = composeParsers(createSymbolParser("("), parseExpression, createSymbolParser(")"))
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.while),
+                                                     conditionParser,
+                                                     createSymbolParser("{"),
+                                                     parseStatements,
+                                                     createSymbolParser("}"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = WhileStatement(condition: results.1.1, body: results.3)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseDoStatement(input: Input) -> Match<DoStatement>? {
-        fatalError()
+        guard let (results, reminder) = chainParsers(input: input, createKeywordParser(.do), parseSubroutineCall, createSymbolParser(";"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = DoStatement(subroutineCall: results.1)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseReturnStatement(input: Input) -> Match<ReturnStatement>? {
-        fatalError()
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.return),
+                                                     createZeroOrOneParser(parser: parseExpression),
+                                                     createSymbolParser(";"))?.toTuple() else {
+                                                        return nil
+        }
+
+        let syntax = ReturnStatement(returnExpression: results.1)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     // MARK: - Expressions
@@ -272,6 +358,20 @@ public class Parser {
     func createZeroOrMoreParser<T>(parser: @escaping Matcher<T>) -> Matcher<[T]> {
         return { input in
             return self.parseZeroOrMore(input: input, parser: parser)
+        }
+    }
+
+    func parseZeroOrOne<T>(input: Input, parser: Matcher<T>) -> Match<T?> {
+        if let match = parser(input) {
+            return Match(syntax: match.syntax, reminder: match.reminder)
+        }
+
+        return Match(syntax: nil, reminder: input)
+    }
+
+    func createZeroOrOneParser<T>(parser: @escaping Matcher<T>) -> Matcher<T?> {
+        return { input in
+            return self.parseZeroOrOne(input: input, parser: parser)
         }
     }
 
