@@ -7,7 +7,7 @@
 
 import Foundation
 
-// MARK:  Program structure
+// MARK: - Program structure
 
 public struct ClassDeclaration {
     let className: ClassName
@@ -63,14 +63,13 @@ public struct VarDeclaration {
     let additionalVarNames: [VarName]
 }
 
-public struct Identifier {
-}
+public typealias Identifier = String
 
 public typealias ClassName = Identifier
 public typealias SubroutineName = Identifier
 public typealias VarName = Identifier
 
-// MARK: Statements
+// MARK: - Statements
 
 public enum Statement {
     case letStatement(LetStatement)
@@ -105,7 +104,7 @@ public struct ReturnStatement {
     let returnExpression: Expression?
 }
 
-// MARK: Expressions
+// MARK: - Expressions
 
 public struct Expression {
     let lhs: Term
