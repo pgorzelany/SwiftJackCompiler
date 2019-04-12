@@ -1,6 +1,12 @@
 import Common
 import Foundation
 
+extension ArraySlice where Element == Token {
+    func reminder(after index: Index) -> ArraySlice<Element> {
+        return self[index...]
+    }
+}
+
 /// Generates AST from a list of token. Evaluates the gramatical correctness of the code.
 public class Parser {
 
@@ -68,7 +74,7 @@ public class Parser {
             return nil
         }
 
-        return Match(syntax: identifier, reminder: input[(input.startIndex + 1)...])
+        return Match(syntax: identifier, reminder: input.reminder(after: input.startIndex))
     }
 
     func parseClassName(input: Input) -> Match<ClassName>? {
@@ -140,7 +146,11 @@ public class Parser {
     }
 
     func parseKeywordConstant(input: Input) -> Match<KeywordConstant>? {
-        fatalError()
+        guard let first = input.first, case let Token.keyword(keyword) = first, let keywordConstant = KeywordConstant(rawValue: keyword.rawValue) else {
+            return nil
+        }
+
+        return Match(syntax: keywordConstant, reminder: input.reminder(after: input.startIndex))
     }
 
     // MARK: - Helpers
@@ -150,6 +160,6 @@ public class Parser {
             return nil
         }
 
-        return Match(syntax: keyword, reminder: input[(input.startIndex + 1)...])
+        return Match(syntax: keyword, reminder: input.reminder(after: input.startIndex))
     }
 }
