@@ -11,4 +11,8 @@ import Foundation
 struct Match<T> {
     let syntax: T
     let reminder: Parser.Input
+
+    func toTuple() -> (syntax: T, reminder: Parser.Input) {
+        return (syntax: syntax, reminder: reminder)
+    }
 }

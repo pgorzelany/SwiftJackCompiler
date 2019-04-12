@@ -11,8 +11,14 @@ import Foundation
 
 public struct ClassDeclaration {
     let className: ClassName
-    let classVarDeclaration: [ClassVarDeclaration]
+    let classVarDeclarations: [ClassVarDeclaration]
     let subroutineDeclarations: [SubroutineDeclaration]
+
+    public init(className: ClassName, classVarDeclarations: [ClassVarDeclaration], subroutineDeclarations: [SubroutineDeclaration]) {
+        self.className = className
+        self.classVarDeclarations = classVarDeclarations
+        self.subroutineDeclarations = subroutineDeclarations
+    }
 }
 
 public struct ClassVarDeclaration {
