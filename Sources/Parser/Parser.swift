@@ -130,7 +130,14 @@ public class Parser {
     }
 
     func parseSubroutineBody(input: Input) -> Match<SubroutineBody>? {
-        fatalError()
+        let varDeclarationsParser = createZeroOrMoreParser(parser: parseVarDeclaration)
+        let statementsParser = createZeroOrMoreParser(parser: parseStatement)
+        guard let (results, reminder) = chainParsers(input: input, createSymbolParser("{"), varDeclarationsParser, statementsParser, createSymbolParser("}"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = SubroutineBody(varDeclarations: results.1, statements: results.2)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseVarDeclaration(input: Input) -> Match<VarDeclaration>? {

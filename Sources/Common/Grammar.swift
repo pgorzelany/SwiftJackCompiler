@@ -80,6 +80,11 @@ public struct ParameterList {
 public struct SubroutineBody {
     let varDeclarations: [VarDeclaration]
     let statements: [Statement]
+
+    public init(varDeclarations: [VarDeclaration], statements: [Statement]) {
+        self.varDeclarations = varDeclarations
+        self.statements = statements
+    }
 }
 
 public struct VarDeclaration {
