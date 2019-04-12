@@ -42,27 +42,80 @@ public class Parser {
     }
 
     func parseClassVarDeclaration(input: Input) -> Match<ClassVarDeclaration>? {
-        fatalError()
+        let additionalVarNamesParser = createZeroOrMoreParser(parser: composeParsers(createSymbolParser(","), parseVarName))
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     parseClassVarType,
+                                                     parseType,
+                                                     parseVarName,
+                                                     additionalVarNamesParser,
+                                                     createSymbolParser(";"))?.toTuple() else {
+            return nil
+        }
+
+        let syntax = ClassVarDeclaration(classVarType: results.0, type: results.1, varName: results.2, additionalVarNames: results.3.map{ $0.1 })
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseClassVarType(input: Input) -> Match<ClassVarType>? {
-        fatalError()
+        if let staticMatch = parseKeyword(.static, input: input) {
+            return Match(syntax: ClassVarType.static, reminder: staticMatch.reminder)
+        } else if let fieldMatch = parseKeyword(.field, input: input) {
+            return Match(syntax: ClassVarType.field, reminder: fieldMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseType(input: Input) -> Match<Type>? {
-        fatalError()
+        if let intMatch = parseKeyword(.int, input: input) {
+            return Match(syntax: Type.int, reminder: intMatch.reminder)
+        } else if let charMatch = parseKeyword(.char, input: input) {
+            return Match(syntax: Type.char, reminder: charMatch.reminder)
+        } else if let booleanMatch = parseKeyword(.boolean, input: input) {
+            return Match(syntax: Type.boolean, reminder: booleanMatch.reminder)
+        } else if let classNameMatch = parseClassName(input: input) {
+            return Match(syntax: Type.class(classNameMatch.syntax), reminder: classNameMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseSubroutineDeclaration(input: Input) -> Match<SubroutineDeclaration>? {
-        fatalError()
+        let parameterListParser = composeParsers(createSymbolParser("("), parseParameterList, createSymbolParser(")"))
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     parseSubroutineDeclarationType,
+                                                     parseSubroutineReturnType,
+                                                     parseSubroutineName,
+                                                     parameterListParser,
+                                                     parseSubroutineBody)?.toTuple() else {
+            return nil
+        }
+
+        let syntax = SubroutineDeclaration(declarationType: results.0, returnType: results.1, name: results.2, parameterList: results.3.1, body: results.4)
+
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseSubroutineDeclarationType(input: Input) -> Match<SubroutineDeclarationType>? {
-        fatalError()
+        if let constructorMatch = parseKeyword(.constructor, input: input) {
+            return Match(syntax: SubroutineDeclarationType.constructor, reminder: constructorMatch.reminder)
+        } else if let functionMatch = parseKeyword(.function, input: input) {
+            return Match(syntax: SubroutineDeclarationType.function, reminder: functionMatch.reminder)
+        } else if let methodMatch = parseKeyword(.method, input: input) {
+            return Match(syntax: SubroutineDeclarationType.method, reminder: methodMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseSubroutineReturnType(input: Input) -> Match<SubroutineReturnType>? {
-        fatalError()
+        if let voidMatch = parseKeyword(.void, input: input) {
+            return Match(syntax: SubroutineReturnType.void, reminder: voidMatch.reminder)
+        } else if let typeMatch = parseType(input: input) {
+            return Match(syntax: SubroutineReturnType.type(typeMatch.syntax), reminder: typeMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseParameterList(input: Input) -> Match<ParameterList>? {

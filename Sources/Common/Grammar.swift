@@ -26,6 +26,13 @@ public struct ClassVarDeclaration {
     let type: Type
     let varName: VarName
     let additionalVarNames: [VarName]
+
+    public init(classVarType: ClassVarType, type: Type, varName: VarName, additionalVarNames: [VarName]) {
+        self.classVarType = classVarType
+        self.type = type
+        self.varName = varName
+        self.additionalVarNames = additionalVarNames
+    }
 }
 
 public enum ClassVarType: String {
@@ -43,6 +50,14 @@ public struct SubroutineDeclaration {
     let name: SubroutineName
     let parameterList: ParameterList
     let body: SubroutineBody
+
+    public init(declarationType: SubroutineDeclarationType, returnType: SubroutineReturnType, name: SubroutineName, parameterList: ParameterList, body: SubroutineBody) {
+        self.declarationType = declarationType
+        self.returnType = returnType
+        self.name = name
+        self.parameterList = parameterList
+        self.body = body
+    }
 }
 
 public enum SubroutineDeclarationType: String {
