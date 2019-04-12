@@ -169,7 +169,12 @@ public struct ReturnStatement {
 
 public struct Expression {
     let lhs: Term
-    let rhs: [(Operation, Term)]
+    let rhs: [(Operator, Term)]
+
+    public init(lhs: Term, rhs: [(Operator, Term)]) {
+        self.lhs = lhs
+        self.rhs = rhs
+    }
 }
 
 public indirect enum Term {
@@ -184,24 +189,32 @@ public indirect enum Term {
 
 public enum SubroutineCall {
     case function(SubroutineName, ExpressionList)
-    case method(MethodContext, SubroutineName, ExpressionList)
+    case method(Identifier, SubroutineName, ExpressionList)
 }
 
-public enum MethodContext {
-    case `class`(ClassName)
-    case instance(VarName)
+public struct ExpressionList {
+    let expressions: (required: Expression, additional: [Expression])?
+
+    public init(expressions: (Expression, [Expression])?) {
+        self.expressions = expressions
+    }
 }
 
-public typealias ExpressionList = [Expression]
-
-public enum Operation {
-    // TODO
-    case addition
+public enum Operator: String {
+    case addition = "+"
+    case subtraction = "-"
+    case multiplication = "*"
+    case division = "/"
+    case and = "&"
+    case or = "|"
+    case letThan = "<"
+    case greaterThan = ">"
+    case equal = "="
 }
 
-public enum UnaryOperation {
-    // TODO
-    case somethin
+public enum UnaryOperation: String {
+    case minus
+    case tilde
 }
 
 public enum KeywordConstant: String {

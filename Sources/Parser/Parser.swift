@@ -278,12 +278,15 @@ public class Parser {
 
     // MARK: - Expressions
 
-    func parseExpressionList(input: Input) -> Match<ExpressionList>? {
-        fatalError()
-    }
-
     func parseExpression(input: Input) -> Match<Expression>? {
-        fatalError()
+        guard let (results, reminder) = chainParsers(input: input,
+                                                     parseTerm,
+                                                     createZeroOrMoreParser(parser: composeParsers(parseOperation, parseTerm)))?.toTuple() else {
+                                                        return nil
+        }
+
+        let syntax = Expression(lhs: results.0, rhs: results.1)
+        return Match(syntax: syntax, reminder: reminder)
     }
 
     func parseTerm(input: Input) -> Match<Term>? {
@@ -294,16 +297,31 @@ public class Parser {
         fatalError()
     }
 
-    func parseMethodContext(input: Input) -> Match<MethodContext>? {
-        fatalError()
+    func parseExpressionList(input: Input) -> Match<ExpressionList>? {
+        let additionalExpressionsParser = createZeroOrMoreParser(parser: composeParsers(createSymbolParser(","), parseExpression))
+        let parser = composeParsers(parseExpression, additionalExpressionsParser)
+        guard let (results, reminder) = parser(input)?.toTuple() else {
+            return Match(syntax: ExpressionList(expressions: nil), reminder: input)
+        }
+
+        let syntax = ExpressionList(expressions: (results.0, results.1.map({$0.1})))
+        return Match(syntax: syntax, reminder: reminder)
     }
 
-    func parseOperation(input: Input) -> Match<Common.Operation>? {
-        fatalError()
+    func parseOperation(input: Input) -> Match<Operator>? {
+        guard let first = input.first, case let Token.symbol(symbol) = first, let `operator` = Operator(rawValue: symbol) else {
+            return nil
+        }
+
+        return Match(syntax: `operator`, reminder: input.reminder(after: input.startIndex))
     }
 
     func parseUnaryOperation(input: Input) -> Match<UnaryOperation>? {
-        fatalError()
+        guard let first = input.first, case let Token.symbol(symbol) = first, let unaryOperator = UnaryOperation(rawValue: symbol) else {
+            return nil
+        }
+
+        return Match(syntax: unaryOperator, reminder: input.reminder(after: input.startIndex))
     }
 
     func parseKeywordConstant(input: Input) -> Match<KeywordConstant>? {
