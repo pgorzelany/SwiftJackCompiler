@@ -85,7 +85,65 @@ public class Parser {
 
     // MARK: - Statements
 
+    func parseStatement(input: Input) -> Match<Statement>? {
+        fatalError()
+    }
 
+    func parseLetStatement(input: Input) -> Match<LetStatement>? {
+        fatalError()
+    }
+
+    func parseIfStatement(input: Input) -> Match<IfStatement>? {
+        fatalError()
+    }
+
+    func parseWhileStatement(input: Input) -> Match<WhileStatement>? {
+        fatalError()
+    }
+
+    func parseDoStatement(input: Input) -> Match<DoStatement>? {
+        fatalError()
+    }
+
+    func parseReturnStatement(input: Input) -> Match<ReturnStatement>? {
+        fatalError()
+    }
+
+    // MARK: - Expressions
+
+    func parseExpressionList(input: Input) -> Match<ExpressionList>? {
+        fatalError()
+    }
+
+    func parseExpression(input: Input) -> Match<Expression>? {
+        fatalError()
+    }
+
+    func parseTerm(input: Input) -> Match<Term>? {
+        fatalError()
+    }
+
+    func parseSubroutineCall(input: Input) -> Match<SubroutineCall>? {
+        fatalError()
+    }
+
+    func parseMethodContext(input: Input) -> Match<MethodContext>? {
+        fatalError()
+    }
+
+    func parseOperation(input: Input) -> Match<Common.Operation>? {
+        fatalError()
+    }
+
+    func parseUnaryOperation(input: Input) -> Match<UnaryOperation>? {
+        fatalError()
+    }
+
+    func parseKeywordConstant(input: Input) -> Match<KeywordConstant>? {
+        fatalError()
+    }
+
+    // MARK: - Helpers
 
     func parseKeyword(_ keyword: Keyword, input: Input) -> Match<Keyword>? {
         guard let first = input.first, case let Token.keyword(inputKeyword) = first, keyword == inputKeyword else {
