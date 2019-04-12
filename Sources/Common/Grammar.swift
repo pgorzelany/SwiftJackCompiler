@@ -70,7 +70,11 @@ public enum SubroutineReturnType {
 }
 
 public struct ParameterList {
-    let parameters: [(Type, VarName)]
+    let parameters: [(Type, VarName)]?
+
+    public init(parameters: [(Type, VarName)]?) {
+        self.parameters = parameters
+    }
 }
 
 public struct SubroutineBody {

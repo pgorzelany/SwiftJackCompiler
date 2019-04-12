@@ -119,7 +119,14 @@ public class Parser {
     }
 
     func parseParameterList(input: Input) -> Match<ParameterList>? {
-        fatalError()
+        let varNameParser = composeParsers(parseType, parseVarName)
+        let additionalVarNamesParser = createZeroOrMoreParser(parser: composeParsers(createSymbolParser(","), parseType, parseVarName))
+        if let (results, reminder) = chainParsers(input: input, varNameParser, additionalVarNamesParser)?.toTuple() {
+            let firstVar = results.0
+            let additionalVars = results.1.map({($0.1, $0.2)})
+            return Match(syntax: ParameterList(parameters: [firstVar] + additionalVars), reminder: reminder)
+        }
+        return Match(syntax: ParameterList(parameters: nil), reminder: input)
     }
 
     func parseSubroutineBody(input: Input) -> Match<SubroutineBody>? {
