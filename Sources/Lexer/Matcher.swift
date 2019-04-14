@@ -33,6 +33,20 @@ class WhitespaceMatcher: Matcher {
     }
 }
 
+class CommentMatcher: Matcher {
+    func match(input: String) -> (token: Token, remaining: String)? {
+        let singleLineCommentRegex = #"//.*"#
+        let multilineCommentRegex = #"/\*.*\*/"#
+        if let matchRange = input.tokenMatchRange(regex: singleLineCommentRegex) {
+            return (Token.comment(String(input[matchRange])), String(input[matchRange.upperBound...]))
+        } else if let matchRange = input.tokenMatchRange(regex: multilineCommentRegex) {
+            return (Token.comment(String(input[matchRange])), String(input[matchRange.upperBound...]))
+        }
+
+        return nil
+    }
+}
+
 class IdentifierMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
         let regex = "^([a-zA-Z])[a-zA-Z0-9]*"
@@ -78,8 +92,8 @@ class SymbolMatcher: Matcher {
 
 class IntegerConstantMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
-        let regex = "^[0-9]"
-        guard let matchRange = input.tokenMatchRange(regex: regex), let int = Int16(input[matchRange]), int <= 32767 else {
+        let regex = #"^[0-9]"#
+        guard let matchRange = input.tokenMatchRange(regex: regex), let int = Int16(input[matchRange].trimmingCharacters(in: .whitespacesAndNewlines)), int <= 32767 else {
             return nil
         }
 

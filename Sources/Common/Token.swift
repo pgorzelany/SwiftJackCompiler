@@ -5,4 +5,5 @@ public enum Token: Equatable {
     case stringConstant(String)
     case integerConstant(Int16)
     case identifier(String)
+    case comment(String)
 }

@@ -3,7 +3,7 @@ import Foundation
 
 extension ArraySlice where Element == Token {
     func reminder(after index: Index) -> ArraySlice<Element> {
-        return self[index...]
+        return self[(index + 1)...]
     }
 }
 
@@ -12,6 +12,8 @@ public class Parser {
 
     typealias Input = ArraySlice<Token>
     typealias Matcher<T> = (Input) -> Match<T>?
+
+    public init() {}
 
     // MARK: - Program structure
 
@@ -453,7 +455,7 @@ public class Parser {
                 return nil
             }
 
-            return Match(syntax: (firstMatch.syntax, secondMatch.syntax, thirdMatch.syntax), reminder: secondMatch.reminder)
+            return Match(syntax: (firstMatch.syntax, secondMatch.syntax, thirdMatch.syntax), reminder: thirdMatch.reminder)
         }
     }
 

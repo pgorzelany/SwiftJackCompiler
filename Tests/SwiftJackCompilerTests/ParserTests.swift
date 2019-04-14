@@ -5,27 +5,46 @@
 //  Created by pgorzelany on 11/01/2019.
 //
 
+@testable import Lexer
+@testable import Parser
 import XCTest
 
 class ParserTests: XCTestCase {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+    var lexer: Lexer!
+    let parser = Parser()
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    func testTokenizingValidProgram() {
+        let source = """
+                    class Main {
+                       function void main() {
+                          var Array a;
+                          var int length;
+                          var int i, sum;
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+                          let length = Keyboard.readInt("How many numbers? ");
+                          let a = Array.new(length);
 
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+                          let i = 0;
+                          while (i < length) {
+                             let a[i] = Keyboard.readInt("Enter a number: ");
+                             let sum = sum + a[i];
+                             let i = i + 1;
+                          }
+
+                          do Output.printString("The average is ");
+                          do Output.printInt(sum / length);
+                          return;
+                       }
+                    }
+                    """
+        lexer = Lexer(source: source)
+        do {
+            let tokens = try lexer.getAllTokens()
+            let results = try parser.parseProgram(tokens)
+            XCTAssert(results.count == 1)
+        } catch {
+            XCTAssert(false)
         }
     }
 

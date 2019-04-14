@@ -9,6 +9,7 @@ public class Lexer {
     let source: String
     var remainingSource: String
     let matchers: [Matcher] = [
+        CommentMatcher(),
         WhitespaceMatcher(),
         KeywordMatcher(),
         SymbolMatcher(),
@@ -45,6 +46,16 @@ public class Lexer {
         while let nextToken = try getNextToken() {
             results.append(nextToken)
         }
-        return results.filter({ $0 != Token.whitespace })
+        return results.filter({
+            if $0 == Token.whitespace {
+                return false
+            }
+
+            if case Token.comment = $0 {
+                return false
+            }
+
+            return true
+        })
     }
 }
