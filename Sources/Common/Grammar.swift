@@ -213,8 +213,8 @@ public enum Operator: String {
 }
 
 public enum UnaryOperation: String {
-    case minus
-    case tilde
+    case minus = "-"
+    case tilde = "~"
 }
 
 public enum KeywordConstant: String {

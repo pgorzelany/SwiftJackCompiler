@@ -294,7 +294,16 @@ public class Parser {
     }
 
     func parseSubroutineCall(input: Input) -> Match<SubroutineCall>? {
-        fatalError()
+        let expressionListParser = composeParsers(createSymbolParser("("), parseExpressionList, createSymbolParser(")"))
+        if let (results, reminder) = chainParsers(input: input, parseSubroutineName, expressionListParser)?.toTuple() {
+            let syntax = SubroutineCall.function(results.0, results.1.1)
+            return Match(syntax: syntax, reminder: reminder)
+        } else if let (results, reminder) = chainParsers(input: input, parseIdentifier, createSymbolParser("."), parseSubroutineName, expressionListParser)?.toTuple() {
+            let syntax = SubroutineCall.method(results.0, results.2, results.3.1)
+            return Match(syntax: syntax, reminder: reminder)
+        }
+
+        return nil
     }
 
     func parseExpressionList(input: Input) -> Match<ExpressionList>? {
