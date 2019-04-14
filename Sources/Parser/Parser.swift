@@ -290,7 +290,42 @@ public class Parser {
     }
 
     func parseTerm(input: Input) -> Match<Term>? {
-        fatalError()
+        guard let first = input.first else {
+            return nil
+        }
+
+        let subscriptExpressionParser = composeParsers(createSymbolParser("["),
+                                                       parseExpression,
+                                                       createSymbolParser("]"))
+        let groupedExpressionParser = composeParsers(createSymbolParser("("),
+                                                     parseExpression,
+                                                     createSymbolParser(")"))
+
+        #warning("Probably need to rearange the methods so everything parses correctly in order")
+        if case let Token.integerConstant(integer) = first {
+            return Match(syntax: Term.integerConstant(integer), reminder: input.reminder(after: input.startIndex))
+        } else if case let Token.stringConstant(string) = first {
+            return Match(syntax: Term.stringConstant(string), reminder: input.reminder(after: input.startIndex))
+        } else if case let Token.keyword(keyword) = first, let keywordConstant = KeywordConstant(rawValue: keyword.rawValue) {
+            return Match(syntax: Term.keywordConstant(keywordConstant), reminder: input.reminder(after: input.startIndex))
+        } else if let (results, reminder) = chainParsers(input: input, parseIdentifier, subscriptExpressionParser)?.toTuple() {
+            let syntax = Term.subscript(results.0, results.1.1)
+            return Match(syntax: syntax, reminder: reminder)
+        } else if let subroutineCallMatch = parseSubroutineCall(input: input) {
+            let syntax = Term.subroutineCall(subroutineCallMatch.syntax)
+            return Match(syntax: syntax, reminder: subroutineCallMatch.reminder)
+        } else if let expressionGroupMatch = groupedExpressionParser(input) {
+            let syntax = Term.group(expressionGroupMatch.syntax.1)
+            return Match(syntax: syntax, reminder: expressionGroupMatch.reminder)
+        } else if let (results, reminder) = chainParsers(input: input, parseUnaryOperator, parseTerm)?.toTuple() {
+            let syntax = Term.operation(results.0, results.1)
+            return Match(syntax: syntax, reminder: reminder)
+        } else if let varNameMatch = parseIdentifier(input: input) {
+            let syntax = Term.varName(varNameMatch.syntax)
+            return Match(syntax: syntax, reminder: varNameMatch.reminder)
+        }
+
+        return nil
     }
 
     func parseSubroutineCall(input: Input) -> Match<SubroutineCall>? {
@@ -325,8 +360,8 @@ public class Parser {
         return Match(syntax: `operator`, reminder: input.reminder(after: input.startIndex))
     }
 
-    func parseUnaryOperation(input: Input) -> Match<UnaryOperation>? {
-        guard let first = input.first, case let Token.symbol(symbol) = first, let unaryOperator = UnaryOperation(rawValue: symbol) else {
+    func parseUnaryOperator(input: Input) -> Match<UnaryOperator>? {
+        guard let first = input.first, case let Token.symbol(symbol) = first, let unaryOperator = UnaryOperator(rawValue: symbol) else {
             return nil
         }
 

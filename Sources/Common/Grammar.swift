@@ -183,8 +183,9 @@ public indirect enum Term {
     case keywordConstant(KeywordConstant)
     case varName(VarName)
     case `subscript`(VarName, Expression)
+    case subroutineCall(SubroutineCall)
     case group(Expression)
-    case operation(UnaryOperation, Term)
+    case operation(UnaryOperator, Term)
 }
 
 public enum SubroutineCall {
@@ -212,7 +213,7 @@ public enum Operator: String {
     case equal = "="
 }
 
-public enum UnaryOperation: String {
+public enum UnaryOperator: String {
     case minus = "-"
     case tilde = "~"
 }
