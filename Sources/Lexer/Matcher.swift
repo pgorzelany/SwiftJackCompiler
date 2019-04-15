@@ -92,7 +92,7 @@ class SymbolMatcher: Matcher {
 
 class IntegerConstantMatcher: Matcher {
     func match(input: String) -> (token: Token, remaining: String)? {
-        let regex = #"^[0-9]"#
+        let regex = #"[0-9]+"#
         guard let matchRange = input.tokenMatchRange(regex: regex), let int = Int16(input[matchRange].trimmingCharacters(in: .whitespacesAndNewlines)), int <= 32767 else {
             return nil
         }
