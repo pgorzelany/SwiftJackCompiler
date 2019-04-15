@@ -14,39 +14,39 @@ class ParserTests: XCTestCase {
     var lexer: Lexer!
     let parser = Parser()
 
-//    func testParsingValidProgram() {
-//        let source = """
-//                    class Main {
-//                       function void main() {
-//                          var Array a;
-//                          var int length;
-//                          var int i, sum;
-//
-//                          let length = Keyboard.readInt("How many numbers? ");
-//                          let a = Array.new(length);
-//
-//                          let i = 0;
-//                          while (i < length) {
-//                             let a[i] = Keyboard.readInt("Enter a number: ");
-//                             let sum = sum + a[i];
-//                             let i = i + 1;
-//                          }
-//
-//                          do Output.printString("The average is ");
-//                          do Output.printInt(sum / length);
-//                          return;
-//                       }
-//                    }
-//                    """
-//        lexer = Lexer(source: source)
-//        do {
-//            let tokens = try lexer.getAllTokens()
-//            let results = try parser.parseProgram(tokens)
-//            XCTAssert(results.count == 1)
-//        } catch {
-//            XCTAssert(false)
-//        }
-//    }
+    func testParsingValidProgram() {
+        let source = """
+                    class Main {
+                       function void main() {
+                          var Array a;
+                          var int length;
+                          var int i, sum;
+
+                          let length = Keyboard.readInt("How many numbers? ");
+                          let a = Array.new(length);
+
+                          let i = 0;
+                          while (i < length) {
+                             let a[i] = Keyboard.readInt("Enter a number: ");
+                             let sum = sum + a[i];
+                             let i = i + 1;
+                          }
+
+                          do Output.printString("The average is ");
+                          do Output.printInt(sum / length);
+                          return;
+                       }
+                    }
+                    """
+        lexer = Lexer(source: source)
+        do {
+            let tokens = try lexer.getAllTokens()
+            let results = try parser.parseProgram(tokens)
+            XCTAssert(results.count == 1)
+        } catch {
+            XCTAssert(false)
+        }
+    }
 
     func testParsingComplexValidClass() {
         let source = """
@@ -81,7 +81,34 @@ class ParserTests: XCTestCase {
                           return;
                        }
 
-                       
+                       /** Runs the game: handles the user's inputs and moves the square accordingly */
+                       method void run() {
+                          var char key;  // the key currently pressed by the user
+                          var boolean exit;
+                          let exit = false;
+
+                          while (~exit) {
+                             // waits for a key to be pressed
+                             while (key = 0) {
+                                let key = Keyboard.keyPressed();
+                                do moveSquare();
+                             }
+                             if (key = 81)  { let exit = true; }     // q key
+                             if (key = 90)  { do square.decSize(); } // z key
+                             if (key = 88)  { do square.incSize(); } // x key
+                             if (key = 131) { let direction = 1; }   // up arrow
+                             if (key = 133) { let direction = 2; }   // down arrow
+                             if (key = 130) { let direction = 3; }   // left arrow
+                             if (key = 132) { let direction = 4; }   // right arrow
+
+                             // waits for the key to be released
+                             while (~(key = 0)) {
+                                let key = Keyboard.keyPressed();
+                                do moveSquare();
+                             }
+                         } // while
+                         return;
+                       }
                     }
                     """
         lexer = Lexer(source: source)
