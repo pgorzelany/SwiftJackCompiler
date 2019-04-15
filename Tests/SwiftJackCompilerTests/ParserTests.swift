@@ -14,58 +14,42 @@ class ParserTests: XCTestCase {
     var lexer: Lexer!
     let parser = Parser()
 
-    func testParsingValidProgram() {
-        let source = """
-                    class Main {
-                       function void main() {
-                          var Array a;
-                          var int length;
-                          var int i, sum;
-
-                          let length = Keyboard.readInt("How many numbers? ");
-                          let a = Array.new(length);
-
-                          let i = 0;
-                          while (i < length) {
-                             let a[i] = Keyboard.readInt("Enter a number: ");
-                             let sum = sum + a[i];
-                             let i = i + 1;
-                          }
-
-                          do Output.printString("The average is ");
-                          do Output.printInt(sum / length);
-                          return;
-                       }
-                    }
-                    """
-        lexer = Lexer(source: source)
-        do {
-            let tokens = try lexer.getAllTokens()
-            let results = try parser.parseProgram(tokens)
-            XCTAssert(results.count == 1)
-        } catch {
-            XCTAssert(false)
-        }
-    }
+//    func testParsingValidProgram() {
+//        let source = """
+//                    class Main {
+//                       function void main() {
+//                          var Array a;
+//                          var int length;
+//                          var int i, sum;
+//
+//                          let length = Keyboard.readInt("How many numbers? ");
+//                          let a = Array.new(length);
+//
+//                          let i = 0;
+//                          while (i < length) {
+//                             let a[i] = Keyboard.readInt("Enter a number: ");
+//                             let sum = sum + a[i];
+//                             let i = i + 1;
+//                          }
+//
+//                          do Output.printString("The average is ");
+//                          do Output.printInt(sum / length);
+//                          return;
+//                       }
+//                    }
+//                    """
+//        lexer = Lexer(source: source)
+//        do {
+//            let tokens = try lexer.getAllTokens()
+//            let results = try parser.parseProgram(tokens)
+//            XCTAssert(results.count == 1)
+//        } catch {
+//            XCTAssert(false)
+//        }
+//    }
 
     func testParsingComplexValidClass() {
         let source = """
-                    // This file is part of www.nand2tetris.org
-                    // and the book "The Elements of Computing Systems"
-                    // by Nisan and Schocken, MIT Press.
-                    // File name: projects/09/Square/SquareGame.jack
-
-                    /**
-                     * Implements the Square Dance game.
-                     * This simple game allows the user to move a black square around
-                     * the screen, and change the square's size during the movement.
-                     * When the game starts, a square of 30 by 30 pixels is shown at the
-                     * top-left corner of the screen. The user controls the square as follows.
-                     * The 4 arrow keys are used to move the square up, down, left, and right.
-                     * The 'z' and 'x' keys are used, respectively, to decrement and increment
-                     * the square's size. The 'q' key is used to quit the game.
-                     */
-
                     class SquareGame {
                        field Square square; // the square of this game
                        field int direction; // the square's current direction:
