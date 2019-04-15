@@ -220,13 +220,14 @@ public class Parser {
         let thenParser = composeParsers(createSymbolParser("{"), parseStatements, createSymbolParser("}"))
         let elseParser = createZeroOrOneParser(parser: parseElseStatement)
         guard let (results, reminder) = chainParsers(input: input,
+                                                     createKeywordParser(.if),
                                                      conditionParser,
                                                      thenParser,
                                                      elseParser)?.toTuple() else {
             return nil
         }
 
-        let syntax = IfStatement(condition: results.0.1, then: results.1.1, else: results.2)
+        let syntax = IfStatement(condition: results.1.1, then: results.2.1, else: results.3)
         return Match(syntax: syntax, reminder: reminder)
     }
 
